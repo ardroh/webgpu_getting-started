@@ -1,16 +1,52 @@
-<!doctype html>
+<!DOCTYPE html>
 
 <html>
   <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title>WebGPU Life</title>
   </head>
   <body>
     <canvas width="512" height="512"></canvas>
     <script type="module">
       const canvas = document.querySelector("canvas");
-
-      // Your WebGPU code will begin here!
+      if (!navigator.gpu) {
+        throw new Error("WebGPU not supported on this browser.");
+      }
+      const adapter = await navigator.gpu.requestAdapter();
+      if (!adapter) {
+        throw new Error("No appropriate GPUAdapter found.");
+      }
+      const device = await adapter.requestDevice();
+      if (!device) {
+        throw new Error("No appropriate GPUDevice found.");
+      }
+      console.log("Device:", device);
+      const context = canvas.getContext("webgpu");
+      if (!context) {
+        throw new Error("WebGPU not supported on this canvas.");
+      }
+      console.log("Context:", context);
+      const canvasFormat = navigator.gpu.getPreferredCanvasFormat();
+      context.configure({
+        device,
+        format: canvasFormat,
+      });
+      const encoder = device.createCommandEncoder();
+      if (!encoder) {
+        throw new Error("No appropriate GPUCommandEncoder found.");
+      }
+      const pass = encoder.beginRenderPass({
+        colorAttachments: [
+          {
+            view: context.getCurrentTexture().createView(),
+            loadOp: "clear",
+            storeOp: "store",
+          },
+        ],
+      });
+      pass.end();
+      const commandBuffer = encoder.finish();
+      device.queue.submit([commandBuffer]);
     </script>
   </body>
 </html>
