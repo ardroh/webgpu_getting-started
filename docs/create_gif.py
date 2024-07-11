@@ -12,6 +12,7 @@ images = [Image.open(img)
           for img in glob.glob(f'{SCRIPT_DIR_ABS_PATH}/image*.png')]
 
 font = ImageFont.truetype("arial.ttf", 15)
+footer_font = ImageFont.truetype("arial.ttf", 10)
 
 metadata_file_path = os.path.join(SCRIPT_DIR_ABS_PATH, 'metadata.json')
 images_metadata = {}
@@ -29,6 +30,11 @@ for i, img in enumerate(images):
     draw.rectangle([(10, 10), (20 + draw.textlength(text, font=font),
                    20 + font.getbbox(text)[3])], fill="black")
     draw.text((15, 15), text, fill="white", font=font)
+    footer_text = 'ardroh/webgpu_getting-started.git'
+    img_width, img_height = img.size
+    footer_len = draw.textlength(footer_text, font=footer_font)
+    draw.text((img_width - footer_len - 20, img_height - 30),
+              footer_text, fill="white", font=footer_font)
     images[i] = img
 
 images[0].save(OUTPUT_FILE, save_all=True,
