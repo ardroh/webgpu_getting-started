@@ -3,6 +3,7 @@
 from PIL import Image, ImageDraw, ImageFont
 import glob
 import os
+import json
 
 SCRIPT_DIR_ABS_PATH = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_FILE = os.path.join(SCRIPT_DIR_ABS_PATH, 'slides.gif')
@@ -10,13 +11,24 @@ OUTPUT_FILE = os.path.join(SCRIPT_DIR_ABS_PATH, 'slides.gif')
 images = [Image.open(img)
           for img in glob.glob(f'{SCRIPT_DIR_ABS_PATH}/image*.png')]
 
-font = ImageFont.truetype("arial.ttf", 40)
+font = ImageFont.truetype("arial.ttf", 15)
+
+metadata_file_path = os.path.join(SCRIPT_DIR_ABS_PATH, 'metadata.json')
+images_metadata = {}
+if os.path.exists(metadata_file_path):
+    with open(metadata_file_path, 'r') as f:
+        metadata = json.load(f)
+        images_metadata = metadata.get('images', {})
 
 for i, img in enumerate(images):
     draw = ImageDraw.Draw(img)
-    text = f"{i+1}"
-    position = (10, 10)
-    draw.text(position, text, fill="white", font=font)
+    filename = f'image{i+1}.png'
+    metadata = next(
+        (m for m in images_metadata if m['filename'] == filename), None)
+    text = f"{i+1}: {metadata['description']}" if metadata else f"{i+1}"
+    draw.rectangle([(10, 10), (20 + draw.textlength(text, font=font),
+                   20 + font.getbbox(text)[3])], fill="black")
+    draw.text((15, 15), text, fill="white", font=font)
     images[i] = img
 
 images[0].save(OUTPUT_FILE, save_all=True,

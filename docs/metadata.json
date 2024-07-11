@@ -1,0 +1,24 @@
+{
+  "images": [
+    {
+      "filename": "image1.png",
+      "description": "Canvas cleared with black color"
+    },
+    {
+      "filename": "image2.png",
+      "description": "Canvas cleared with blue color"
+    },
+    {
+      "filename": "image3.png",
+      "description": "Red square rendered by vertices"
+    },
+    {
+      "filename": "image4.png",
+      "description": "Multiple squares via grid using uniform buffer"
+    },
+    {
+      "filename": "image5.png",
+      "description": "Colorized squares via vertex and fragment shaders"
+    }
+  ]
+}
